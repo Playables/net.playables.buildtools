@@ -2,7 +2,7 @@
 
 ## Features
 - commandline build utility: ```Commandlinebuild.Build()```
-- Fastlane actions: unity_build, upload_to_steam
+- Fastlane actions: unity_build, upload_to_steam (in utils/fastlane-actions)
 - read android keystore passwords from MacOS keychain (set them with utils/set_android_passwords.sh)
 - set iOS versioning system to apple-generic so fastlane can change the build number
 - set iOS ITSAppUsesNonExemptEncryption on build
