@@ -1,7 +1,10 @@
+using System.IO;
 using UnityEditor;
 using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
+using UnityEngine;
 
+#if !UNITY_CLOUD_BUILD
 public class PreBuild_SetAndroidPasswordsFromKeychain : IPreprocessBuildWithReport{
 	
 	public int callbackOrder { get; }
@@ -9,8 +12,11 @@ public class PreBuild_SetAndroidPasswordsFromKeychain : IPreprocessBuildWithRepo
 	{
 		if (report.summary.platform == BuildTarget.Android)
 		{
-			PlayerSettings.keyaliasPass = MacosKeychain.GetKeychainPassword("unity_android_keyalias_password","unity_android_keyalias");
-			PlayerSettings.keystorePass = MacosKeychain.GetKeychainPassword("unity_android_keystore_password","unity_android_keystore");
+			var keystoreName = Path.GetFileNameWithoutExtension(PlayerSettings.Android.keystoreName);
+
+			PlayerSettings.keyaliasPass = MacosKeychain.GetKeychainPassword(keystoreName,"unity_android_keyalias");
+			PlayerSettings.keystorePass = MacosKeychain.GetKeychainPassword(keystoreName,"unity_android_keystore");
 		}
 	}
 }
+#endif
