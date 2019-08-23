@@ -11,8 +11,8 @@ public class PreBuild_AndroidAppBundle : IPostprocessBuildWithReport, IPreproces
 	
 	public void OnPreprocessBuild(BuildReport report)
 	{
-		var args = new string[]{"-android_app_bundle","1"};
-		//var args = System.Environment.GetCommandLineArgs();
+		//var args = new string[]{"-android_app_bundle","1"};
+		var args = System.Environment.GetCommandLineArgs();
 
 		if(!CommandlineParseUtils.HasArgument(args,"-android_app_bundle"))
 			return;
