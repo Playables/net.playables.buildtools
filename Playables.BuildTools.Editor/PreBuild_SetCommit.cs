@@ -14,6 +14,8 @@ public class PreBuild_SetCommit : IPostprocessBuildWithReport, IPreprocessBuildW
 	public void OnPreprocessBuild(BuildReport report)
 	{
 		var commit = ShellHelper.Bash("git rev-parse HEAD").TrimEnd( '\r', '\n' );
+
+		new FileInfo(path).Directory?.Create();
 		
 		File.WriteAllText(path,commit);
 		AssetDatabase.ImportAsset(path,ImportAssetOptions.ForceSynchronousImport);
