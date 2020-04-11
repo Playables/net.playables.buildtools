@@ -18,8 +18,12 @@ public class PostBuild_SetVersioningSystem : IPostprocessBuildWithReport {
 			string sPath = PBXProject.GetPBXProjectPath(report.summary.outputPath);
 			project.ReadFromFile(sPath);
 
+			#if UNITY_2019_3_OR_NEWER
+			string g = project.GetUnityMainTargetGuid();
+			#else
 			string tn = PBXProject.GetUnityTargetName();
 			string g = project.TargetGuidByName(tn);
+			#endif
 
             
 			project.AddBuildProperty(g,
