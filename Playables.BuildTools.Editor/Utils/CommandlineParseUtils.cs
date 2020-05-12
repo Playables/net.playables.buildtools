@@ -1,6 +1,5 @@
-using System.Text;
 
-public static class CommandlineParseUtils
+internal static class CommandlineParseUtils
 {
 	public static bool HasArgument(string[] args,string arg)
 	{
