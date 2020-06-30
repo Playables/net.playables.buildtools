@@ -16,7 +16,7 @@ Download and copy to your_project/Packages/net.playables.buildtools or use this 
 ```json
 {
   "dependencies": {
-    "net.playables.buildtools": "https://github.com/anyuser/net.playables.buildtools.git"
+    "net.playables.buildtools": "https://github.com/playables/net.playables.buildtools.git"
   }
 }
 ```
