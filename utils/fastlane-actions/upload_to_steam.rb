@@ -36,19 +36,19 @@ module Fastlane
         [
           FastlaneCore::ConfigItem.new(key: :username,
                                        env_name: "FL_UPLOAD_TO_STEAM_USERNAME", # The name of the environment variable
-                                       description: "steam username", # a short description of this parameter
+                                       description: "username", # a short description of this parameter
                                        verify_block: proc do |value|
                                           UI.user_error!("No username set.") unless (value and not value.empty?)
                                        end),
           FastlaneCore::ConfigItem.new(key: :steamcmd_path,
                                        env_name: "FL_UPLOAD_TO_STEAM_STEAMCMD_PATH", # The name of the environment variable
-                                       description: "path to steamcmd executable (steamcmd.sh on mac)", # a short description of this parameter
+                                       description: "path to steamcmd executable", # a short description of this parameter
                                        verify_block: proc do |value|
                                           UI.user_error!("No steamcmd path set.") unless (value and not value.empty?)
                                        end),
           FastlaneCore::ConfigItem.new(key: :vdf_path,
                                        env_name: "FL_UPLOAD_TO_STEAM_VDF_PATH",
-                                       description: "VDF config path (relative to steamcmd path)",
+                                       description: "VDF config path (relative to steamcmd)",
                                        verify_block: proc do |value|
                                           UI.user_error!("No steam vdf path set.") unless (value and not value.empty?)
                                        end) 
@@ -69,7 +69,7 @@ module Fastlane
 
       def self.authors
         # So no one will ever forget your contribution to fastlane :) You are awesome btw!
-        ["Mario von Rickenbach, @any_user"]
+        ["Mario von Rickenbach"]
       end
 
       def self.is_supported?(platform)

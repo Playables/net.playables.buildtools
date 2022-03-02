@@ -13,6 +13,9 @@ module Fastlane
        build_target = params[:build_target]
        build_path = params[:build_path]
        build_version = params[:build_version]
+       unity_username = params[:unity_username]
+       obb = params[:obb].to_s
+       android_app_bundle = params[:android_app_bundle].to_s
 
 
        project_path = File.join(project_path,"") # make sure there's a trailing slash
@@ -35,12 +38,40 @@ module Fastlane
           "-executeMethod","CommandlineBuild.Build",
           "-projectpath",project_path,
           "-buildtarget",build_target,
+          "-obb",obb,
+          "-android_app_bundle",android_app_bundle,
           "-buildpath","#{build_path}"]
+
+
+		if unity_username != "not_set"
+
+        	UI.message "Username: #{unity_username}"
+        	find_cmd = "security find-generic-password -a #{unity_username} -s fastlane-unity -w;"
+
+    		require 'open3'
+     	
+     		exit_status = 0
+     		unity_password = ""
+			Open3.popen3(find_cmd) {|stdin, stdout, stderr, wait_thr|
+
+				unity_password = stdout.read.chomp
+				exit_status = wait_thr.value.exitstatus # Process::Status object returned.
+			}
+
+        	if exit_status != 0
+
+				UI.user_error! "Unity password for #{unity_username} not set in keychain.\nYou can set it by running the following command:\nsecurity add-generic-password -a #{unity_username} -s fastlane-unity -w"	
+			end
+
+			cmd += ["-username","#{unity_username}"]
+			cmd += ["-password","#{unity_password}"]
+        end
 
         if build_version != -1
           UI.message "Build version: #{build_version}"
           cmd += ["-buildversion","#{build_version}"]
         end
+        UI.message "Building..."
 
         if system(*cmd)
           UI.success "Unity build finished."
@@ -95,6 +126,22 @@ module Fastlane
                                        description: "Build version (currently only implemented for Android)",
                                        is_string: false, # true: verifies the input is a string, false: every kind of value
                                        default_value: -1,
+                                       ),
+          FastlaneCore::ConfigItem.new(key: :unity_username,
+                                       env_name: "FL_UNITY_USERNAME", # The name of the environment variable
+                                       description: "Username", # a short description of this parameter
+                                       default_value:"not_set"),
+          FastlaneCore::ConfigItem.new(key: :obb,
+                                       env_name: "FL_UNITY_OBB",
+                                       description: "Export build with obb expansion file (android)",
+                                       is_string: false, # true: verifies the input is a string, false: every kind of value
+                                       default_value: 0,
+                                       ), # the default value if the user didn't provide one
+          FastlaneCore::ConfigItem.new(key: :android_app_bundle,
+                                       env_name: "FL_UNITY_ANDROID_APP_BUNDLE",
+                                       description: "Export build as android app bundle",
+                                       is_string: false, # true: verifies the input is a string, false: every kind of value
+                                       default_value: 0,
                                        ) # the default value if the user didn't provide one
         ]
       end
@@ -113,7 +160,7 @@ module Fastlane
 
       def self.authors
         # So no one will ever forget your contribution to fastlane :) You are awesome btw!
-        ["Mario von Rickenbach, @any_user"]
+        ["Mario von Rickenbach"]
       end
 
       def self.is_supported?(platform)
