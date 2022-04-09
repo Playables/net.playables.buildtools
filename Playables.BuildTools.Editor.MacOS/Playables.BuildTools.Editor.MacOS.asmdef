@@ -1,5 +1,5 @@
 {
-    "name": "Playables.BuildTools.Editor.iOS",
+    "name": "Playables.BuildTools.Editor.MacOS",
     "rootNamespace": "",
     "references": [
         "GUID:b9b67a336e5d14ea59eb853f10424c3e"
@@ -13,7 +13,7 @@
     "precompiledReferences": [],
     "autoReferenced": true,
     "defineConstraints": [
-        "UNITY_IOS"
+        "UNITY_STANDALONE"
     ],
     "versionDefines": [],
     "noEngineReferences": false

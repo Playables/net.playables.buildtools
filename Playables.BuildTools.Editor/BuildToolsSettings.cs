@@ -16,7 +16,7 @@ public class BuildToolsSettings : ScriptableObject
 		var settings = AssetDatabase.LoadAssetAtPath<BuildToolsSettings>(k_MyCustomSettingsPath);
 		if (settings == null)
 		{
-			settings = ScriptableObject.CreateInstance<BuildToolsSettings>();
+			settings = CreateInstance<BuildToolsSettings>();
 			AssetDatabase.CreateAsset(settings, k_MyCustomSettingsPath);
 			AssetDatabase.SaveAssets();
 		}
