@@ -11,6 +11,9 @@ public class PostBuild_IOS_SetNonExtemptEncryptionFlagInPlist : IPostprocessBuil
 	public void OnPostprocessBuild(BuildReport report)
 	{
 		if(report.summary.platform == BuildTarget.iOS)
-			InfoPlistUtils.WriteInfoPlistKeyForBuildReport(report, InfoPlistKeys_IOS.ITSAppUsesNonExemptEncryption, new PlistElementBoolean(false));
+		{
+			var plistPath = InfoPlistUtils.GetPlistPath(report);
+			InfoPlistUtils.WritePlistKey(plistPath, InfoPlistKeys_IOS.ITSAppUsesNonExemptEncryption, new PlistElementBoolean(false));
+		}
 	}
 }

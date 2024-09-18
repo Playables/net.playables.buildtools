@@ -11,32 +11,6 @@ public static class InfoPlistUtils
 		plist.root[key.key] = element;
 	}
 
-	public static bool PlatformUsesPlist(BuildTarget target)
-	{
-		return GetInfoPlistPath(target) != null;
-	}
-
-	public static string GetInfoPlistPath(BuildReport report)
-	{
-		var plistPath = GetInfoPlistPath(report.summary.platform);
-
-		if (plistPath == null)
-			return null;
-		return report.summary.outputPath + plistPath;
-	}
-
-	public static string GetInfoPlistPath(BuildTarget target)
-	{
-		switch (target)
-		{
-			case BuildTarget.iOS:
-				return "/Info.plist";
-			case BuildTarget.StandaloneOSX:
-				return "/Contents/Info.plist";
-			default:
-				return null;
-		}
-	}
 
 	public static void OverridePlist(PlistDocument plist, PlistDocument plistOverrides)
 	{
@@ -45,8 +19,15 @@ public static class InfoPlistUtils
 			plist.root[pair.Key] = pair.Value;
 		}
 	}
+	
+	public static void WritePlistKey<T>(string path, PlistKey<T> key, T plistElement) where T : PlistElement
+	{
+		var plist = ReadPlist(path);
+		SetRootKey(plist, key, plistElement);
+		WritePlist( plist,path);
+	}
 
-	public static PlistDocument GetPlistFromFile(string path)
+	public static PlistDocument ReadPlist(string path)
 	{
 		PlistDocument plist = new PlistDocument();
 		plist.ReadFromString(File.ReadAllText(path));
@@ -54,20 +35,24 @@ public static class InfoPlistUtils
 		return plist;
 	}
 
-	public static PlistDocument GetInfoPlistFromBuildReport(BuildReport report)
+	public static void WritePlist(PlistDocument plist,string path)
 	{
-		return GetPlistFromFile(GetInfoPlistPath(report));
+		File.WriteAllText(path, plist.WriteToString());
 	}
 
-	public static void WriteInfoPlistForBuildReport(BuildReport report, PlistDocument plist)
+	public static string GetPlistPath(BuildTarget platform)
 	{
-		File.WriteAllText(GetInfoPlistPath(report), plist.WriteToString());
+		return platform switch
+		{
+			BuildTarget.iOS => $"/Info.plist",
+			BuildTarget.StandaloneOSX => $"/Contents/Info.plist",
+			_ => null
+		};
 	}
 
-	public static void WriteInfoPlistKeyForBuildReport<T>(BuildReport report, PlistKey<T> key, T plistElement) where T : PlistElement
+	public static string GetPlistPath(BuildReport report)
 	{
-		var plist = GetInfoPlistFromBuildReport(report);
-		SetRootKey(plist, key, plistElement);
-		WriteInfoPlistForBuildReport(report, plist);
+		return $"{report.summary.outputPath}{GetPlistPath(report.summary.platform)}";
+		
 	}
 }

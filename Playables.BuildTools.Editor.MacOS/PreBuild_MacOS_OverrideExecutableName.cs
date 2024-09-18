@@ -10,35 +10,36 @@ public class PreBuild_MacOS_OverrideExecutableName : IPostprocessBuildWithReport
 	public int callbackOrder => 0;
 
 	string productName;
+	bool isOverrideActive = false;
 
 	public void OnPreprocessBuild(BuildReport report)
 	{
-		if (report.summary.platform == BuildTarget.StandaloneOSX)
+		if (report.summary.platform != BuildTarget.StandaloneOSX)
+			return;
+
+		var buildToolsSettings = BuildToolsSettings.GetOrCreateSettings();
+		if (buildToolsSettings.macosOverrideExecutableName)
 		{
-			var buildToolsSettings = BuildToolsSettings.GetOrCreateSettings();
-			if (buildToolsSettings.macosOverrideExecutableName)
-			{
-				productName = PlayerSettings.productName;
-				var executableName = buildToolsSettings.macosExecutableName;
-				Debug.Log($"Set macos executable name to {executableName} (instead of product name {productName})");
-				PlayerSettings.productName = executableName;
-			}
+			productName = PlayerSettings.productName;
+			var executableName = buildToolsSettings.macosExecutableName;
+			Debug.Log($"Set macos executable name to {executableName} (instead of product name {productName})");
+			PlayerSettings.productName = executableName;
+			isOverrideActive = true;
 		}
 	}
 
 	public void OnPostprocessBuild(BuildReport report)
 	{
-		if (report.summary.platform == BuildTarget.StandaloneOSX)
-		{
-			if (BuildToolsSettings.GetOrCreateSettings().macosOverrideExecutableName)
-			{
-				PlayerSettings.productName = productName;
+		if (!isOverrideActive)
+			return;
 
-				Debug.Log($"Updating Info.plist to use original product name ({productName})");
-				InfoPlistUtils.WriteInfoPlistKeyForBuildReport(report, InfoPlistKeys_MacOS.CFBundleName, new PlistElementString(productName));
+		PlayerSettings.productName = productName;
 
-				productName = null;
-			}
-		}
+		Debug.Log($"Updating Info.plist to use original product name ({productName})");
+		var plistPath = InfoPlistUtils.GetPlistPath(report);
+		InfoPlistUtils.WritePlistKey(plistPath, InfoPlistKeys_MacOS.CFBundleName, new PlistElementString(productName));
+
+		productName = null;
+		isOverrideActive = false;
 	}
 }
