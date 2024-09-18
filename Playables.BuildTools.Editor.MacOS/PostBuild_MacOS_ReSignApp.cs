@@ -1,3 +1,4 @@
+using UnityEditor;
 using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
 using UnityEditor.OSXStandalone;
@@ -8,6 +9,7 @@ public class PostBuild_MacOS_ReSignApp : IPostprocessBuildWithReport {
 
 	public void OnPostprocessBuild(BuildReport report)
 	{
-		MacOSCodeSigning.CodeSignAppBundle(report.summary.outputPath);
+		if(report.summary.platform == BuildTarget.StandaloneOSX)
+			MacOSCodeSigning.CodeSignAppBundle(report.summary.outputPath);
 	}
 }
