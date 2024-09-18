@@ -2,6 +2,7 @@ using System.IO;
 using UnityEditor;
 using UnityEditor.Build.Reporting;
 using UnityEditor.iOS.Xcode;
+using UnityEngine;
 
 public static class InfoPlistUtils
 {
@@ -10,14 +11,28 @@ public static class InfoPlistUtils
 		plist.root[key.key] = element;
 	}
 
+	public static bool PlatformUsesPlist(BuildTarget target)
+	{
+		return GetInfoPlistPath(target) != null;
+	}
+
 	public static string GetInfoPlistPath(BuildReport report)
 	{
-		switch (report.summary.platform)
+		var plistPath = GetInfoPlistPath(report.summary.platform);
+
+		if (plistPath == null)
+			return null;
+		return report.summary.outputPath + plistPath;
+	}
+
+	public static string GetInfoPlistPath(BuildTarget target)
+	{
+		switch (target)
 		{
 			case BuildTarget.iOS:
-				return report.summary.outputPath + "/Info.plist";
+				return "/Info.plist";
 			case BuildTarget.StandaloneOSX:
-				return report.summary.outputPath + "/Contents/Info.plist";
+				return "/Contents/Info.plist";
 			default:
 				return null;
 		}

@@ -12,6 +12,8 @@ public class PostBuild_MacOS_OverridePlist : IPostprocessBuildWithReport {
 
 	public void OnPostprocessBuild(BuildReport report)
 	{
+		if(!InfoPlistUtils.PlatformUsesPlist( report.summary.platform) )
+			return;
 		var overridePlistPath = $"Assets/Build/macOS/Info.plist";
 		if (File.Exists(overridePlistPath))
 		{
