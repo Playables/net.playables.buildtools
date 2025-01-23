@@ -13,7 +13,10 @@ public class PreBuild_SetCommit : IPostprocessBuildWithReport, IPreprocessBuildW
 	
 	public void OnPreprocessBuild(BuildReport report)
 	{
-		var commit = ShellHelper.Bash("git rev-parse HEAD").TrimEnd( '\r', '\n' );
+		var cmd = "git";
+		var arg = "rev-parse HEAD";
+		var result = Application.platform == RuntimePlatform.WindowsEditor ? ShellHelper.Cmd(cmd,arg) : ShellHelper.Bash($"{cmd} {arg}");
+		var commit = result.TrimEnd( '\r', '\n' );
 
 		new FileInfo(path).Directory?.Create();
 		
